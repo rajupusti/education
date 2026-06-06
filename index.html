@@ -14,7 +14,7 @@
         }
         
         .letter-card:hover {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
         
         .back {
@@ -28,15 +28,32 @@
         .letter-card.active .back {
             display: block;
         }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .overlay-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.3));
+            color: white;
+            padding: 20px 15px 15px;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 min-h-screen py-10">
     <div class="max-w-6xl mx-auto px-4">
         <div class="text-center mb-12">
             <h1 class="text-6xl font-bold bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
-                Click the Letter!
+                Alphabet Adventure
             </h1>
-            <p class="text-xl text-gray-600 mt-3">Click any letter to see the picture + hear the sound</p>
+            <p class="text-xl text-gray-600 mt-3">Click the letter to reveal the picture with name</p>
         </div>
 
         <div id="grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-6">
@@ -96,22 +113,27 @@
             card.className = `letter-card bg-white rounded-3xl shadow-2xl overflow-hidden cursor-pointer aspect-square flex items-center justify-center relative`;
 
             card.innerHTML = `
-                <!-- Front: Only Letter -->
-                <div class="front absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
-                    <span class="text-8xl font-black tracking-tighter drop-shadow-lg">${item.letter}</span>
+                <!-- Front: Only Big Letter -->
+                <div class="front absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                    <span class="text-9xl font-black tracking-tighter drop-shadow-2xl">${item.letter}</span>
                 </div>
 
-                <!-- Back: Image + Word -->
-                <div class="back absolute inset-0 flex flex-col items-center justify-center p-6 bg-white">
-                    <div class="w-48 h-48 rounded-2xl overflow-hidden shadow-inner border-4 border-white mb-6">
-                        <img src="${item.image}" alt="${item.word}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="flex items-center gap-3 text-3xl font-bold text-gray-800">
-                        <span>${item.emoji}</span>
-                        <span>${item.word}</span>
-                    </div>
-                    <div class="mt-4 text-indigo-600">
-                        <i class="fa-solid fa-volume-high text-3xl"></i>
+                <!-- Back: Image with Letter + Name overlaid -->
+                <div class="back absolute inset-0">
+                    <div class="image-container">
+                        <img src="${item.image}" 
+                             alt="${item.word}" 
+                             class="w-full h-full object-cover">
+                        
+                        <!-- Overlay with Letter and Name -->
+                        <div class="overlay-text">
+                            <div class="flex items-center justify-center gap-3">
+                                <span class="text-5xl font-black bg-white/20 backdrop-blur-md px-5 py-1 rounded-2xl border border-white/30">
+                                    ${item.letter}
+                                </span>
+                                <span class="text-3xl font-bold">${item.emoji} ${item.word}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -121,7 +143,6 @@
                     card.classList.add('active');
                     speak(`${item.letter} for ${item.word}`);
                 } else {
-                    // Optional: Click again to go back to letter
                     card.classList.remove('active');
                 }
             });
@@ -132,7 +153,6 @@
         function init() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
-
             alphabetData.forEach(item => {
                 const card = createCard(item);
                 grid.appendChild(card);
@@ -143,7 +163,6 @@
             init();
         }
 
-        // Initialize
         window.onload = init;
     </script>
 </body>
